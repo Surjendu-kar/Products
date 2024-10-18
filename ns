@@ -1,0 +1,149 @@
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
+import { styled } from "@mui/system";
+
+const NavContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  [theme.breakpoints.down("lg")]: {},
+  [theme.breakpoints.down("md")]: {},
+  [theme.breakpoints.down("sm")]: {},
+}));
+
+const Heading = styled(Typography)(({ theme }) => ({
+  fontWeight: "bold",
+  fontSize: "24px",
+  [theme.breakpoints.down("lg")]: {},
+  [theme.breakpoints.down("md")]: {},
+  [theme.breakpoints.down("sm")]: {},
+}));
+
+const ButtonGroup = styled(Box)(({ theme }) => ({
+  "& > *:not(:last-child)": {
+    marginRight: theme.spacing(2),
+  },
+}));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
+    borderRadius: "8px",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    width: "550px",
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogTitle-root": {
+    padding: theme.spacing(2, 2, 1),
+    "& .MuiTypography-root": {
+      fontSize: "20px",
+      fontWeight: "bold",
+    },
+  },
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(1, 2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1, 2, 2),
+  },
+}));
+
+const StyledTextField = styled(TextField)(() => ({
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "4px",
+  },
+  "& .MuiInputLabel-root": {
+    fontSize: "14px",
+  },
+  "& .MuiOutlinedInput-input": {
+    padding: "10px 14px",
+  },
+}));
+
+const StyledButton = styled(Button)(() => ({
+  textTransform: "none",
+  padding: "6px 16px",
+  borderRadius: "4px",
+}));
+
+function Navbar() {
+  const [open, setOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setCategoryName("");
+  };
+
+  const handleSave = () => {
+    console.log("Saving category:", categoryName);
+    handleClose();
+  };
+
+  return (
+    <>
+      <NavContainer>
+        <Box>
+          <Heading>Products</Heading>
+        </Box>
+        <ButtonGroup>
+          <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+            Add Category
+          </Button>
+          <Button variant="contained" color="primary">
+            Add Product
+          </Button>
+        </ButtonGroup>
+      </NavContainer>
+
+      <StyledDialog open={open} onClose={handleClose}>
+        <DialogTitle>Add category</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Category name *
+          </Typography>
+          <StyledTextField
+            autoFocus
+            fullWidth
+            variant="outlined"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <StyledButton
+            onClick={handleClose}
+            color="primary"
+            variant="outlined"
+          >
+            Cancel
+          </StyledButton>
+          <StyledButton
+            onClick={handleSave}
+            color="primary"
+            variant="contained"
+          >
+            Save
+          </StyledButton>
+        </DialogActions>
+      </StyledDialog>
+    </>
+  );
+}
+
+export default Navbar;
