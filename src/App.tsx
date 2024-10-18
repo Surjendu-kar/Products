@@ -1,26 +1,51 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Homepage/Home";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import Products from "./pages/Products/Products";
-
-const DevelopmentPage = () => (
-  <Box>
-    <Typography>This section is under development</Typography>
-    <Typography>Please check back later!</Typography>
-  </Box>
-);
+import DevelopmentPage from "./components/DevelopmentPage/DevelopmentPage";
 
 function App() {
   return (
     <Box sx={{ display: "flex" }}>
       <Sidebar />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="*" element={<DevelopmentPage />} />
-      </Routes>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          minHeight: "100vh",
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<DevelopmentPage pageName="Home" />} />
+          <Route path="/products" element={<Products />} />
+          <Route
+            path="/stores"
+            element={<DevelopmentPage pageName="Stores" />}
+          />
+          <Route
+            path="/catalogue"
+            element={<DevelopmentPage pageName="Catalogue" />}
+          />
+          <Route
+            path="/promotions"
+            element={<DevelopmentPage pageName="Promotions" />}
+          />
+          <Route
+            path="/reports"
+            element={<DevelopmentPage pageName="Reports" />}
+          />
+          <Route
+            path="/docs"
+            element={<DevelopmentPage pageName="Documentation" />}
+          />
+          <Route
+            path="/settings"
+            element={<DevelopmentPage pageName="Settings" />}
+          />
+          <Route path="*" element={<DevelopmentPage />} />
+        </Routes>
+      </Box>
     </Box>
   );
 }

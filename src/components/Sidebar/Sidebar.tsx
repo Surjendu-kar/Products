@@ -1,13 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Avatar,
-  styled,
-} from "@mui/material";
+import { Box, List, ListItem, Avatar, styled, Typography } from "@mui/material";
 
 interface StyledListItemProps {
   isActive: boolean;
@@ -45,16 +38,20 @@ const BoxIcon = styled(Box)(() => ({
   border: "1px solid grey",
 }));
 
+const Items = styled(Typography)(() => ({
+  fontSize: "14px",
+}));
+
 const StyledListItem = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== "isActive",
 })<StyledListItemProps>(({ theme, isActive }) => ({
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(0.5),
   transition: "0.3s",
-  backgroundColor: isActive ? "#e0f7fa" : "transparent",
+  backgroundColor: isActive ? "#ECF7FF" : "transparent",
   color: isActive ? "#1F8CD0" : "inherit",
   "&:hover": {
-    backgroundColor: isActive ? "#e0f7fa" : "#f5f5f5",
+    backgroundColor: isActive ? "#ECF7FF" : "#f5f5f5",
     color: isActive ? "#1F8CD0" : "inherit",
     cursor: "pointer",
   },
@@ -66,7 +63,7 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  { text: "Home", path: "home" },
+  { text: "Home", path: "" },
   { text: "Stores", path: "stores" },
   { text: "Products", path: "products" },
   { text: "Catalogue", path: "catalogue" },
@@ -80,12 +77,10 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if the current route matches the menu item
   const isActive = (path: string): boolean => {
     return location.pathname === `/${path}`;
   };
 
-  // Handle navigation when list item is clicked
   const handleNavigation = (path: string): void => {
     navigate(`/${path}`);
   };
@@ -95,7 +90,7 @@ const Sidebar: React.FC = () => {
       <Box>
         <LogoContainer>
           <Avatar src="/logo.png" alt="Logo" />
-          <Box ml={2}>Lemon Inc.</Box>
+          <Typography ml={2}>Lemon Inc.</Typography>
         </LogoContainer>
 
         <List component="nav">
@@ -106,7 +101,7 @@ const Sidebar: React.FC = () => {
               isActive={isActive(item.path)}
             >
               <BoxIcon />
-              <ListItemText primary={item.text} />
+              <Items>{item.text}</Items>
             </StyledListItem>
           ))}
         </List>
@@ -115,10 +110,8 @@ const Sidebar: React.FC = () => {
       <ProfileContainer>
         <Avatar src="https://i.pravatar.cc/300" alt="Andy Samberg" />
         <Box ml={2}>
-          <div>Andy Samberg</div>
-          <div style={{ fontSize: "12px", color: "gray" }}>
-            andy.samberg@gmail.com
-          </div>
+          <Items>Andy Samberg</Items>
+          <Items sx={{ color: "gray" }}>andy.samberg@gmail.com</Items>
         </Box>
       </ProfileContainer>
     </SidebarContainer>
