@@ -15,10 +15,10 @@ const NavContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  width: "100%",
+  width: "95%",
+  margin: "0 auto",
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
-
   [theme.breakpoints.down("lg")]: {},
   [theme.breakpoints.down("md")]: {},
   [theme.breakpoints.down("sm")]: {},
@@ -86,9 +86,10 @@ const StyledTextField = styled(TextField)(() => ({
 
 interface NavbarProps {
   onAddCategory: (categoryName: string) => void;
+  onAddProduct: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onAddCategory }) => {
+const Navbar: React.FC<NavbarProps> = ({ onAddCategory, onAddProduct }) => {
   const [open, setOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
 
@@ -118,7 +119,9 @@ const Navbar: React.FC<NavbarProps> = ({ onAddCategory }) => {
         <AddCategoryBtn variant="outlined" onClick={handleClickOpen}>
           Add Category
         </AddCategoryBtn>
-        <AddProductBtn variant="contained">Add Product</AddProductBtn>
+        <AddProductBtn variant="contained" onClick={onAddProduct}>
+          Add Product
+        </AddProductBtn>
       </ButtonGroup>
 
       <StyledDialog open={open} onClose={handleClose}>
