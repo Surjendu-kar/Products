@@ -84,12 +84,12 @@ const StyledTextField = styled(TextField)(() => ({
   },
 }));
 
-interface NavbarProps {
+interface HeaderProps {
   onAddCategory: (categoryName: string) => void;
   onAddProduct: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onAddCategory, onAddProduct }) => {
+const Header: React.FC<HeaderProps> = ({ onAddCategory, onAddProduct }) => {
   const [open, setOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
 
@@ -159,4 +159,4 @@ const Navbar: React.FC<NavbarProps> = ({ onAddCategory, onAddProduct }) => {
   );
 };
 
-export default Navbar;
+export default Header;

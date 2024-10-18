@@ -1,8 +1,8 @@
 import { styled, Box } from "@mui/material";
-import Navbar from "../../components/Navbar/Navbar";
 import CategoryBox from "../../components/Category/CategoryBox";
 import AddProductDialog from "../../components/ProductDialog/AddProductDialog";
 import { useState } from "react";
+import Header from "../../components/Header/Header";
 
 const MainContainer = styled(Box)(() => ({
   width: "100%",
@@ -36,7 +36,7 @@ function Products() {
 
   return (
     <MainContainer>
-      <Navbar
+      <Header
         onAddCategory={handleAddCategory}
         onAddProduct={handleOpenProductDialog}
       />

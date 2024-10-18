@@ -2,7 +2,7 @@ import { Box, Typography, styled } from "@mui/material";
 
 const CategoryContainer = styled(Box)(({ theme }) => ({
   width: "250px",
-  height: "550px",
+  height: "600px",
   borderRadius: "14px",
   backgroundColor: "#f5f5f5",
   padding: theme.spacing(2),
