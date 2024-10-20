@@ -31,8 +31,8 @@ const ProductCard = styled(Box)(({ theme }) => ({
 }));
 
 const ProductImage = styled("img")({
-  width: "60px",
-  height: "60px",
+  width: "65px",
+  height: "65px",
   objectFit: "cover",
   marginRight: "12px",
   borderRadius: "4px",
