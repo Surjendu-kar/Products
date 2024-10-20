@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
@@ -13,7 +12,13 @@ import {
   Typography,
   styled,
   SelectChangeEvent,
+  Stepper,
+  Step,
+  StepLabel,
 } from "@mui/material";
+import VariantsComponent from "./VariantsComponent";
+import CombinationsComponent from "./CombinationsComponent";
+import PriceComponent from "./PriceComponent";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -43,22 +48,53 @@ interface AddProductDialogProps {
   onClose: () => void;
   categories: string[];
 }
-
+interface FormattedCombination {
+  name: string;
+  sku: string;
+  quantity: number | null;
+  inStock: boolean;
+}
 interface ProductData {
   name: string;
   category: string;
   brand: string;
+  image: string;
+  variants: Variant[];
+  combinations: {
+    [key: string]: FormattedCombination;
+  };
+  priceInr: number;
+  discount: {
+    method: "pct" | "flat";
+    value: number;
+  };
 }
+
+interface Variant {
+  option: string;
+  values: string[];
+}
+
+const steps = ["Description", "Variants", "Combinations", "Price info"];
 
 const AddProductDialog: React.FC<AddProductDialogProps> = ({
   open,
   onClose,
   categories,
 }) => {
+  const [activeStep, setActiveStep] = useState(0);
   const [productData, setProductData] = useState<ProductData>({
     name: "",
     category: "",
     brand: "",
+    image: "",
+    variants: [],
+    combinations: {},
+    priceInr: 0,
+    discount: {
+      method: "pct",
+      value: 0,
+    },
   });
 
   const handleTextChange =
@@ -82,64 +118,176 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       name: "",
       category: "",
       brand: "",
+      image: "",
+      variants: [],
+      combinations: {},
+      priceInr: 0,
+      discount: {
+        method: "pct",
+        value: 0,
+      },
     });
+    setActiveStep(0);
     onClose();
   };
 
   const handleNext = () => {
-    console.log("Product Data:", productData);
-    onClose();
-    setProductData({
-      name: "",
-      category: "",
-      brand: "",
-    });
+    if (activeStep === steps.length - 1) {
+      const formattedData = {
+        products: {
+          name: productData.name,
+          category: productData.category,
+          brand: productData.brand,
+          image: productData.image,
+          variants: productData.variants.map((variant) => ({
+            name: variant.option,
+            values: variant.values,
+          })),
+          combinations: Object.entries(productData.combinations).reduce(
+            (
+              acc: { [key: string]: FormattedCombination },
+              [key, value],
+              index
+            ) => {
+              acc[String.fromCharCode(97 + index)] = {
+                name: key,
+                sku: value.sku,
+                quantity:
+                  value.quantity === null ? null : Number(value.quantity),
+                inStock: value.inStock,
+              };
+              return acc;
+            },
+            {}
+          ),
+          priceInr: productData.priceInr,
+          discount: {
+            method: productData.discount.method,
+            value: productData.discount.value,
+          },
+        },
+      };
+
+      console.log(JSON.stringify(formattedData, null, 2));
+      handleCancel();
+    } else {
+      setActiveStep((prevStep) => prevStep + 1);
+    }
+  };
+
+  const handleVariantsChange = (newVariants: Variant[]) => {
+    setProductData((prevData) => ({
+      ...prevData,
+      variants: newVariants,
+    }));
+  };
+
+  const handleCombinationsChange = (
+    newCombinations: ProductData["combinations"]
+  ) => {
+    setProductData((prevData) => ({
+      ...prevData,
+      combinations: newCombinations,
+    }));
+  };
+
+  const handlePriceChange = (
+    price: number,
+    discount: ProductData["discount"]
+  ) => {
+    setProductData((prevData) => ({
+      ...prevData,
+      priceInr: price,
+      discount: discount,
+    }));
+  };
+
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              Product name *
+            </Typography>
+            <TextField
+              fullWidth
+              value={productData.name}
+              onChange={handleTextChange("name")}
+              sx={{ mb: 3 }}
+            />
+
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              Category *
+            </Typography>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <Select
+                value={productData.category}
+                onChange={handleSelectChange}
+                displayEmpty
+              >
+                {categories.map((category, index) => (
+                  <MenuItem key={index} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              Brand *
+            </Typography>
+            <TextField
+              fullWidth
+              value={productData.brand}
+              onChange={handleTextChange("brand")}
+              sx={{ mb: 2 }}
+            />
+
+            <UploadButton startIcon={<span>📎</span>}>
+              Upload Image
+            </UploadButton>
+          </Box>
+        );
+      case 1:
+        return (
+          <VariantsComponent
+            variants={productData.variants}
+            setVariants={handleVariantsChange}
+          />
+        );
+      case 2:
+        return (
+          <CombinationsComponent
+            variants={productData.variants}
+            combinations={productData.combinations}
+            setCombinations={handleCombinationsChange}
+          />
+        );
+      case 3:
+        return (
+          <PriceComponent
+            price={productData.priceInr}
+            discount={productData.discount}
+            onChange={handlePriceChange}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
     <StyledDialog open={open} onClose={onClose} maxWidth="md">
-      <DialogTitle sx={{ fontWeight: "bold" }}>Add Product</DialogTitle>
       <DialogContent>
-        <Box sx={{ mt: 1 }}>
-          <Typography variant="body2" color="textSecondary" gutterBottom>
-            Product name *
-          </Typography>
-          <TextField
-            fullWidth
-            value={productData.name}
-            onChange={handleTextChange("name")}
-            sx={{ mb: 3 }}
-          />
-
-          <Typography variant="body2" color="textSecondary" gutterBottom>
-            Category *
-          </Typography>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <Select
-              value={productData.category}
-              onChange={handleSelectChange}
-              displayEmpty
-            >
-              {categories.map((category, index) => (
-                <MenuItem key={index} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <Typography variant="body2" color="textSecondary" gutterBottom>
-            Brand *
-          </Typography>
-          <TextField
-            fullWidth
-            value={productData.brand}
-            onChange={handleTextChange("brand")}
-            sx={{ mb: 2 }}
-          />
-
-          <UploadButton startIcon={<span>📎</span>}>Upload Image</UploadButton>
-        </Box>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        {renderStepContent()}
       </DialogContent>
       <DialogActions>
         <StyledButton
@@ -149,7 +297,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
           Cancel
         </StyledButton>
         <StyledButton variant="contained" color="primary" onClick={handleNext}>
-          Next
+          {activeStep === steps.length - 1 ? "Finish" : "Next"}
         </StyledButton>
       </DialogActions>
     </StyledDialog>
