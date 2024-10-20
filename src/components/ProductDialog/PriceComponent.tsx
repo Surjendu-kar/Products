@@ -145,7 +145,7 @@ function PriceComponent({ price, discount, onChange }: PriceComponentProps) {
           <StyledToggleButtonGroup
             value={discountType}
             exclusive
-            onChange={handleDiscountTypeChange}
+            onChange={(_, newValue) => handleDiscountTypeChange(newValue)}
             aria-label="discount type"
           >
             <ToggleButton value="pct" aria-label="percentage">
