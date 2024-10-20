@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { styled, Box } from "@mui/material";
 import CategoryBox from "../../components/Category/CategoryBox";
 import AddProductDialog from "../../components/ProductDialog/AddProductDialog";
-import { useState } from "react";
 import Header from "../../components/Header/Header";
 
 const MainContainer = styled(Box)(() => ({
@@ -18,19 +18,41 @@ const CategoriesContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
+interface Product {
+  name: string;
+  price: number;
+  brand: string;
+  image: string;
+  category: string;
+}
+
+interface CategoryData {
+  name: string;
+  products: Product[];
+}
+
 function Products() {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
 
   const handleAddCategory = (categoryName: string) => {
-    setCategories([...categories, categoryName]);
+    setCategories([...categories, { name: categoryName, products: [] }]);
   };
 
   const handleOpenProductDialog = () => {
     setIsProductDialogOpen(true);
   };
 
-  const handleCloseProductDialog = () => {
+  const handleCloseProductDialog = (newProduct?: Product) => {
+    if (newProduct) {
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category.name === newProduct.category
+            ? { ...category, products: [...category.products, newProduct] }
+            : category
+        )
+      );
+    }
     setIsProductDialogOpen(false);
   };
 
@@ -42,14 +64,18 @@ function Products() {
       />
       <CategoriesContainer>
         {categories.map((category, index) => (
-          <CategoryBox key={index} name={category} />
+          <CategoryBox
+            key={index}
+            name={category.name}
+            products={category.products}
+          />
         ))}
       </CategoriesContainer>
 
       <AddProductDialog
         open={isProductDialogOpen}
         onClose={handleCloseProductDialog}
-        categories={categories}
+        categories={categories.map((cat) => cat.name)}
       />
     </MainContainer>
   );

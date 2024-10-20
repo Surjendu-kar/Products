@@ -53,9 +53,17 @@ const FileNameBox = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
 }));
 
+interface Product {
+  name: string;
+  price: number;
+  brand: string;
+  image: string;
+  category: string;
+}
+
 interface AddProductDialogProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (newProduct?: Product) => void; // Changed from ProductData to Product
   categories: string[];
 }
 interface FormattedCombination {
@@ -69,7 +77,7 @@ interface ProductData {
   category: string;
   brand: string;
   image: string;
-  imageName: string;
+  imageName?: string;
   variants: Variant[];
   combinations: {
     [key: string]: FormattedCombination;
@@ -109,6 +117,24 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
     },
   });
 
+  const resetProductData = () => {
+    setProductData({
+      name: "",
+      category: "",
+      brand: "",
+      image: "",
+      imageName: "",
+      variants: [],
+      combinations: {},
+      priceInr: 0,
+      discount: {
+        method: "pct",
+        value: 0,
+      },
+    });
+    setActiveStep(0);
+  };
+
   const handleTextChange =
     (field: keyof ProductData) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -126,21 +152,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
   };
 
   const handleCancel = () => {
-    setProductData({
-      name: "",
-      category: "",
-      brand: "",
-      image: "",
-      imageName: "",
-      variants: [],
-      combinations: {},
-      priceInr: 0,
-      discount: {
-        method: "pct",
-        value: 0,
-      },
-    });
-    setActiveStep(0);
+    resetProductData();
     onClose();
   };
 
@@ -182,7 +194,17 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       };
 
       console.log(JSON.stringify(formattedData, null, 2));
-      handleCancel();
+
+      const newProduct: Product = {
+        name: productData.name,
+        category: productData.category,
+        brand: productData.brand,
+        image: productData.image,
+        price: productData.priceInr,
+      };
+
+      resetProductData();
+      onClose(newProduct);
     } else {
       setActiveStep((prevStep) => prevStep + 1);
     }
@@ -216,8 +238,6 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // ... (keep other handler functions)
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -345,7 +365,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="md">
+    <StyledDialog open={open} onClose={() => onClose()} maxWidth="md">
       <DialogContent>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((label) => (
