@@ -151,7 +151,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
           name: productData.name,
           category: productData.category,
           brand: productData.brand,
-          image: productData.image,
+          image: "",
           variants: productData.variants.map((variant) => ({
             name: variant.option,
             values: variant.values,

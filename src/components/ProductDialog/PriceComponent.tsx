@@ -85,10 +85,7 @@ function PriceComponent({ price, discount, onChange }: PriceComponentProps) {
     });
   };
 
-  const handleDiscountTypeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newDiscountType: "pct" | "flat" | null
-  ) => {
+  const handleDiscountTypeChange = (newDiscountType: "pct" | "flat" | null) => {
     if (newDiscountType !== null) {
       setDiscountType(newDiscountType);
       onChange(Number(localPrice), {
