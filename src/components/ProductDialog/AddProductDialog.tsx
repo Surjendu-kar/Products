@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,12 @@ import {
   Stepper,
   Step,
   StepLabel,
+  IconButton,
 } from "@mui/material";
 import VariantsComponent from "./VariantsComponent";
 import CombinationsComponent from "./CombinationsComponent";
 import PriceComponent from "./PriceComponent";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -42,6 +44,14 @@ const UploadButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
   marginTop: theme.spacing(2),
 }));
+const FileNameBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  marginTop: theme.spacing(2),
+  padding: theme.spacing(1),
+  backgroundColor: theme.palette.grey[100],
+  borderRadius: theme.shape.borderRadius,
+}));
 
 interface AddProductDialogProps {
   open: boolean;
@@ -59,6 +69,7 @@ interface ProductData {
   category: string;
   brand: string;
   image: string;
+  imageName: string;
   variants: Variant[];
   combinations: {
     [key: string]: FormattedCombination;
@@ -88,6 +99,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
     category: "",
     brand: "",
     image: "",
+    imageName: "",
     variants: [],
     combinations: {},
     priceInr: 0,
@@ -119,6 +131,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       category: "",
       brand: "",
       image: "",
+      imageName: "",
       variants: [],
       combinations: {},
       priceInr: 0,
@@ -202,6 +215,40 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
     }));
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ... (keep other handler functions)
+
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductData((prevData) => ({
+          ...prevData,
+          image: reader.result as string,
+          imageName: file.name,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDeleteImage = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      image: "",
+      imageName: "",
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
@@ -243,10 +290,30 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
               onChange={handleTextChange("brand")}
               sx={{ mb: 2 }}
             />
-
-            <UploadButton startIcon={<span>📎</span>}>
-              Upload Image
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: "none" }}
+              ref={fileInputRef}
+            />
+            <UploadButton
+              startIcon={<span>📎</span>}
+              onClick={triggerFileInput}
+              disabled={!!productData.image}
+            >
+              {productData.image ? "Image Uploaded" : "Upload Image"}
             </UploadButton>
+            {productData.imageName && (
+              <FileNameBox>
+                <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                  {productData.imageName}
+                </Typography>
+                <IconButton onClick={handleDeleteImage} size="small">
+                  <DeleteIcon />
+                </IconButton>
+              </FileNameBox>
+            )}
           </Box>
         );
       case 1:
