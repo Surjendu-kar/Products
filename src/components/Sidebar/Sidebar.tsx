@@ -93,7 +93,7 @@ const Sidebar: React.FC = () => {
           <Typography ml={2}>Lemon Inc.</Typography>
         </LogoContainer>
 
-        <List component="nav">
+        <List component="nav" sx={{ borderTop: "1px solid #e0e0e0" }}>
           {menuItems.map((item, index) => (
             <StyledListItem
               key={index}

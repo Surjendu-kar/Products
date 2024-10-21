@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { styled, Box } from "@mui/material";
+import React, { useState } from "react";
+import { styled, Box, Snackbar, Alert } from "@mui/material";
 import CategoryBox from "../../components/Category/CategoryBox";
 import AddProductDialog from "../../components/ProductDialog/AddProductDialog";
 import Header from "../../components/Header/Header";
@@ -34,13 +34,28 @@ interface CategoryData {
 function Products() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
 
   const handleAddCategory = (categoryName: string) => {
-    setCategories([...categories, { name: categoryName, products: [] }]);
+    const trimmedName = categoryName.trim();
+    if (
+      categories.some(
+        (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
+      )
+    ) {
+      showWarning("Category name already exists. Please choose a unique name.");
+    } else {
+      setCategories([...categories, { name: trimmedName, products: [] }]);
+    }
   };
 
   const handleOpenProductDialog = () => {
-    setIsProductDialogOpen(true);
+    if (categories.length === 0) {
+      showWarning("Please add a category before adding a product.");
+    } else {
+      setIsProductDialogOpen(true);
+    }
   };
 
   const handleCloseProductDialog = (newProduct?: Product) => {
@@ -54,6 +69,21 @@ function Products() {
       );
     }
     setIsProductDialogOpen(false);
+  };
+
+  const showWarning = (message: string) => {
+    setWarningMessage(message);
+    setWarningOpen(true);
+  };
+
+  const handleCloseWarning = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setWarningOpen(false);
   };
 
   return (
@@ -77,6 +107,20 @@ function Products() {
         onClose={handleCloseProductDialog}
         categories={categories.map((cat) => cat.name)}
       />
+
+      <Snackbar
+        open={warningOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseWarning}
+      >
+        <Alert
+          onClose={handleCloseWarning}
+          severity="warning"
+          sx={{ width: "80%" }}
+        >
+          {warningMessage}
+        </Alert>
+      </Snackbar>
     </MainContainer>
   );
 }
