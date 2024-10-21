@@ -112,6 +112,7 @@ function Products() {
         open={warningOpen}
         autoHideDuration={3000}
         onClose={handleCloseWarning}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert
           onClose={handleCloseWarning}
